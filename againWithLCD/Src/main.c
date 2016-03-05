@@ -37,6 +37,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "ili9341.h"
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -128,6 +129,7 @@ void Callback01(void const * argument);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
+void mputs( uint8_t *desired_string );
 void CS_Set(uint8_t state);
 void DC_Set(uint8_t state);
 void ili9341_DrawPixel(uint16_t x, uint16_t y, uint32_t color);
@@ -398,6 +400,11 @@ void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+void mputs( uint8_t *desired_string )
+{
+	HAL_UART_Transmit(&huart2, (uint8_t*) desired_string, (uint16_t)strlen(desired_string), 1000 );
+}
+
 void ili9341_DrawPixel(uint16_t x, uint16_t y, uint32_t color) 
 {
 	ILI9341_SetCursorPosition(x, y, x, y);
@@ -485,7 +492,7 @@ void ili9341_Fill(uint32_t color)
 
 void TM_ILI9341_INT_Fill(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color) 
 {
-	uint32_t pixels_count;
+	//uint32_t pixels_count;
 	
 	/* Set cursor position */
 	ILI9341_SetCursorPosition(x0, y0, x1, y1);
@@ -615,10 +622,15 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
+
+	uint8_t buff[100];
+
   for(;;)
   {
-		printf("%d. hello World!\r\n", counter++);
-		
+	sprintf( (char*)buff, "%d. hello World!\r\n", counter++);
+	mputs(buff);
+
+
     osDelay(1000);
   }
   /* USER CODE END 5 */ 
